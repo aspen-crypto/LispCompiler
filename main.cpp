@@ -157,12 +157,18 @@ std::vector<Token> tokenizer(std::string inputCode);
 AST * parser(std::vector<Token> inputTokens);
 AST * walk(int& current, std::vector<Token> inputTokens);
 
+//Handles Memory Dealloc
+std::vector<AST *> ASTtoDelete;
+
 
 int main() {
-    std::string testing = "(defparameter *small* 1) (defparameter *big* 100)(defun guess-my-number ()     (ash (+ *small* *big*) -1))(defun smaller ()     (setf *big* (1- (guess-my-number)))    (guess-my-number))(defun bigger ()     (setf *small* (1+ (guess-my-number)))(guess-my-number))(defun start-over ()   (defparameter *small* 1)   (defparameter *big* 100)  (guess-my-number))";
+    std::string testing = "(add 450 (subtract 60 20)) (testing 550)";
     std::vector<Token> out = tokenizer(testing);
     AST * outAST = parser(out);
     std::cout << outAST->toString();
+    for(auto &i : ASTtoDelete){
+        delete(i);
+    }
     return 0;
 }
 
@@ -183,7 +189,7 @@ std::vector<Token> tokenizer(std::string inputCode){
             }
             i--;
             tokens.push_back(currentToken);
-        } else if (isalpha(inputCode[i]) || inputCode[i] == '*'){
+        } else if (isalpha(inputCode[i])){
             Token currentToken;
             currentToken.type = "name";
             while(isalpha(inputCode[i])) {
@@ -200,14 +206,15 @@ std::vector<Token> tokenizer(std::string inputCode){
 AST * parser (std::vector<Token> inputTokens){
     int current = 0;
     int & send = current;
-    std::cout<< inputTokens.size() << std::endl;
 
     std::vector<AST * > ASTBody;
     while(current < inputTokens.size()){
         ASTBody.push_back(walk(send, inputTokens));
     }
 
-    return new AST(AST::Program, ASTBody);
+    AST * _temp =  new AST(AST::Program, ASTBody);
+    ASTtoDelete.push_back(_temp);
+    return _temp;
 }
 
 AST * walk(int& current, std::vector<Token> inputTokens){
@@ -219,7 +226,10 @@ AST * walk(int& current, std::vector<Token> inputTokens){
     if(token.type == "paren" && token.value == "(") {
         current++;
         token = inputTokens[current];
-        AST *value = new AST(AST::Identifier, token.value);
+
+        AST * _temp = new AST(AST::Identifier, token.value);
+        ASTtoDelete.push_back(_temp);
+        AST *value = _temp;
         current++;
         token = inputTokens[current];
         std::vector<AST *> node;
@@ -228,14 +238,18 @@ AST * walk(int& current, std::vector<Token> inputTokens){
             token = inputTokens[current];
         }
         current++;
-        return new AST(AST::CallExpression, value, node);
+        _temp = new AST(AST::CallExpression, value, node);
+        ASTtoDelete.push_back(_temp);
+        return _temp;
     }
     if(token.type == "name") {
         current++;
-        return new AST(AST::Identifier, token.value);
+        AST * _temp = new AST(AST::Identifier, token.value);
+        ASTtoDelete.push_back(_temp);
+        return _temp;
     }
     if(token.type != "number" || token.type != "paren") {
-        std::cout << "INVALID Token Type " + token.type;
+        std::cout << "INVALID Token Type " + token.type + "; Value " + token.value;
         exit(110);
     }
 }
