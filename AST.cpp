@@ -5,6 +5,9 @@
 class ASTNode;
 
 class AST {
+    ASTNode parent;
+    std::vector<ASTNode> children;
+
     ASTNode createNode(){
         return NULL;
     }
@@ -17,25 +20,66 @@ class ASTNode {
     public:
         enum NodeType {Program, ExpressionStatement, CallExpression, Identifier, NumberLiteral};
 
-        Program createProgram(){
+        virtual NodeType getType();
 
-        }
+        virtual void print(int tabLevel);
 
     private:
-        class Program{
-            std::vector<BodyNode> body;
+        class Program : ASTNode{
             NodeType type = ASTNode::Program;
+            std::vector<ASTNode *> body;
 
-            Program (std::vector<BodyNode> _body) {
-                body = _body;
-            }
+            public :
+                Program(std::vector<ASTNode *> _body){
+                    type = ASTNode::Program;
+                    body = _body;
+                }
+
+                void print(int tabLevel) override {
+                    tabLevel = 0;
+                    for (auto child : body){
+                        child->print(tabLevel ++);
+                    }
+                }
+
+                NodeType getType() override {
+                    return type;
+                }
+
         };
 
-        class BodyNode {
-            NodeType type;
+        class ExpressionStatement : ASTNode{
+            NodeType type = ASTNode::ExpressionStatement;
+            std::vector<ASTNode *> expressions;
 
-            BodyNode(NodeType _type){
-                type = _type;
+            public :
+                ExpressionStatement(std::vector<ASTNode *> _expressions){
+                    expressions = _expressions;
+                }
+
+                void print(int tabLevel) override {
+                    for(auto expression : expressions){
+                        expression -> print(tabLevel++);
+                    }
+                }
+
+                NodeType getType() override {
+                    return type;
+                }
+        };
+
+        class CallExpression : ASTNode{
+            NodeType type = ASTNode::CallExpression;
+            ASTNode * callee;
+            std::vector<ASTNode *> args;
+
+            CallExpression(ASTNode * _callee, std::vector<ASTNode *> _args) {
+                callee = _callee;
+                args = _args;
+            }
+
+            void print(int tabLevel) override {
+
             }
         };
 };
