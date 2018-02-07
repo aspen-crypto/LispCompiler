@@ -1,144 +1,141 @@
-#include "AST.h"
 #include <iostream>
 #include <vector>
 
-class ASTNode;
+class ASTNode {
+    std::vector<ASTNode *> children;
 
-class AST {
-    ASTNode parent;
-    std::vector<ASTNode> children;
+public:
+    enum NodeType {Program, ExpressionStatement, CallExpression, Identifier, NumberLiteral};
+    NodeType type;
 
-    ASTNode createNode(){
-        return NULL;
+    NodeType getType(){
+        return type;
+    };
+
+    void setNodeType(NodeType _type){
+        type = _type;
+    }
+
+    virtual std::string toString(unsigned int tabLevel) {
+        return nullptr;
+    }
+
+    std::vector<ASTNode *> getChildren(){
+        return children;
+    }
+
+    void setChildren(std::vector<ASTNode *> _children){
+        children = _children;
     }
 };
 
-class ASTNode {
-    class Program;
-    class BodyNode;
+class ProgramNode : public ASTNode{
+    NodeType type = ASTNode::Program;
 
-    public:
-        enum NodeType {Program, ExpressionStatement, CallExpression, Identifier, NumberLiteral};
+public :
+    explicit ProgramNode(std::vector<ASTNode *> _body){
+        setChildren(_body);
+        setNodeType(type);
+    }
 
-        virtual NodeType getType();
+    std::string toString(unsigned int tabLevel) override {
+        tabLevel = 0;
+        tabLevel++;
+        std::string output = "type: 'Program',\nbody: [{\n";
+        for (auto &child : getChildren()){
+            output += child->toString(tabLevel);
+        }
+        output += "}];\n";
+        return output;
+    }
 
-        virtual std::string toString(unsigned int tabLevel);
+};
 
-    private:
-        class Program : ASTNode{
-            NodeType type = ASTNode::Program;
-            std::vector<ASTNode *> body;
+class ExpressionStatementNode : public ASTNode{
+    NodeType type = ASTNode::ExpressionStatement;
 
-            public :
-                Program(std::vector<ASTNode *> _body){
-                    type = ASTNode::Program;
-                    body = _body;
-                }
+public :
+    explicit ExpressionStatementNode(std::vector<ASTNode *> _expressions){
+        setChildren(_expressions);
+        setNodeType(type);
+    }
 
-                std::string toString(unsigned int tabLevel = 0) override {
-                    tabLevel = 0;
-                    tabLevel++;
-                    std::string output = "type: 'Program',\nbody: [{\n";
-                    for (auto &child : body){
-                        output += child->toString(tabLevel);
-                    }
-                    output += "\n}];";
-                    return output;
-                }
+    std::string toString(unsigned int tabLevel) override {
+        std::string tabSpacing = std::string(tabLevel * 4, ' ');
+        tabLevel++;
+        std::string output = tabSpacing + "type: 'ExpressionStatement',\n";
+        tabSpacing = std::string(tabLevel * 4, ' ');
+        output += tabSpacing + "expression: {\n";
+        tabLevel++;
+        for(auto expression : getChildren()){
+            output += expression -> toString(tabLevel);
+        }
+        output += tabSpacing + "}\n";
+        return output;
+    }
+};
 
-                NodeType getType() override {
-                    return type;
-                }
+class CallExpressionNode : public ASTNode{
+    NodeType type = ASTNode::CallExpression;
+    ASTNode * callee;
 
-        };
+public:
+    CallExpressionNode(ASTNode * _callee, std::vector<ASTNode *> _args) {
+        callee = _callee;
+        setChildren(_args);
+        setNodeType(type);
+    }
 
-        class ExpressionStatement : ASTNode{
-            NodeType type = ASTNode::ExpressionStatement;
-            std::vector<ASTNode *> expressions;
+    std::string toString(unsigned int tabLevel) override {
+        std::string tabSpacing = std::string(tabLevel * 4, ' ');
+        tabLevel++;
+        std::string output = tabSpacing + "type: 'CallExpression',\n" + tabSpacing + "callee: {\n" + callee -> toString(tabLevel) + tabSpacing + "}\n" + tabSpacing + "args: {\n";
+        for(auto &i : getChildren()){
+            output += i -> toString(tabLevel);
+        }
+        output += tabSpacing + "}\n";
+        return output;
+    };
+};
 
-            public :
-                ExpressionStatement(std::vector<ASTNode *> _expressions){
-                    expressions = _expressions;
-                }
+class IdentifierNode : public ASTNode{
+    NodeType type = ASTNode::Identifier;
+    std::string value;
 
-                std::string toString(unsigned int tabLevel) override {
-                    std::string tabSpacing = std::string(tabLevel * 4, ' ');
-                    tabLevel++;
-                    std::string output = tabSpacing + "type: 'ExpressionStatement',\n";
-                    tabSpacing = std::string(tabLevel * 4, ' ');
-                    output += tabSpacing + "expression: {\n";
-                    tabLevel++;
-                    for(auto expression : expressions){
-                        output += expression -> toString(tabLevel);
-                    }
-                    output += tabSpacing + "}\n";
-                    return output;
-                }
+public:
+    explicit IdentifierNode(std::string _value){
+        value = _value;
+        setNodeType(type);
+    }
 
-                NodeType getType() override {
-                    return type;
-                }
-        };
+    std::string toString(unsigned int tabLevel) override {
+        std::string tabSpacing = std::string(tabLevel * 4, ' ');
+        std::string output  = tabSpacing + "type: 'Identifier',\n" + tabSpacing + "    name: " + value + "\n" + tabSpacing + "}\n";
+        return output;
+    }
 
-        class CallExpression : ASTNode{
-            NodeType type = ASTNode::CallExpression;
-            ASTNode * callee;
-            std::vector<ASTNode *> args;
+    std::string getString(){
+        return value;
+    }
+};
 
-            public:
-                CallExpression(ASTNode * _callee, std::vector<ASTNode *> _args) {
-                    callee = _callee;
-                    args = _args;
-                }
+class NumberLiteralNode: public ASTNode{
+    NodeType type = ASTNode::NumberLiteral;
+    int value;
 
-                std::string toString(unsigned int tabLevel) override {
-                    std::string tabSpacing = std::string(tabLevel * 4, ' ');
-                    tabLevel++;
-                    std::string output = tabSpacing + "type: 'CallExpression',\n" + tabSpacing + "callee: {\n" + callee -> toString(tabLevel) + tabSpacing + "}\n" + tabSpacing + "args: {";
-                    for(auto &i : args){
-                        output += i -> toString(tabLevel);
-                    }
+public:
+    explicit NumberLiteralNode(int _value){
+        value = _value;
+        setNodeType(type);
+    }
 
-                };
-        };
+    std::string toString(unsigned int tabLevel) override {
+        std::string tabSpacing = std::string(tabLevel * 4, ' ');
+        std::string output = tabSpacing + "type: 'NumberLiteral',{\n" + tabSpacing + "    value: " + std::to_string(value) + "\n" + tabSpacing + "}\n";
+        return output;
+    }
 
-        class Identifier : ASTNode{
-            NodeType type = ASTNode::Identifier;
-            std::string value;
-
-            public:
-                Identifier(std::string _value){
-                    value = _value;
-                }
-
-                std::string toString(unsigned int tabLevel) override {
-                    std::string tabSpacing = std::string(tabLevel * 4, ' ');
-                    std::string output  = "type: 'Identifier',\n" + tabSpacing + "name: " + value + "\n" + tabSpacing + "}\n";
-                    return output;
-                }
-
-                std::string getString(){
-                    return value;
-                }
-        };
-
-        class NumberLiteral: ASTNode{
-            NodeType type = ASTNode::NumberLiteral;
-            int value;
-
-            public:
-                NumberLiteral(int _value){
-                    value = _value;
-                }
-
-                std::string toString(unsigned int tabLevel) override {
-                    std::string tabSpacing = std::string(tabLevel * 4, ' ');
-                    std::string output = "type: 'NumberLiteral',\n" + tabSpacing + "value: " + std::to_string(value) + "\n" + tabSpacing + "}\n";
-                    return output;
-                }
-
-                int getValue(){
-                    return value;
-                }
-        };
+    int getValue(){
+        return value;
+    }
 };
