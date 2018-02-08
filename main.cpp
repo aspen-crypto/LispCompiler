@@ -27,7 +27,7 @@ public:
     }
 
     void setChildren(std::vector<ASTNode *> _children){
-        children = _children;
+        children = std::move(_children);
     }
 
     private:
@@ -39,7 +39,7 @@ class ProgramNode : public ASTNode{
 
 public :
     explicit ProgramNode(std::vector<ASTNode *> _body){
-        setChildren(_body);
+        setChildren(std::move(_body));
         setNodeType(type);
     }
 
@@ -61,7 +61,7 @@ class ExpressionStatementNode : public ASTNode{
 
 public :
     explicit ExpressionStatementNode(std::vector<ASTNode *> _expressions){
-        setChildren(_expressions);
+        setChildren(std::move(_expressions));
         setNodeType(type);
     }
 
@@ -87,7 +87,7 @@ class CallExpressionNode : public ASTNode{
 public:
     CallExpressionNode(ASTNode * _callee, std::vector<ASTNode *> _args) {
         callee = _callee;
-        setChildren(_args);
+        setChildren(std::move(_args));
         setNodeType(type);
     }
 
@@ -115,7 +115,7 @@ class IdentifierNode : public ASTNode{
 
 public:
     explicit IdentifierNode(std::string _value){
-        value = _value;
+        value = std::move(_value);
         setNodeType(type);
     }
 
@@ -151,161 +151,30 @@ public:
     }
 };
 
-//class AST {
-//public :
-//    enum ASTTypes {
-//        Program, ExpressionStatement, CallExpression, Identifier, NumberLiteral
-//    };
-//    ASTTypes type;
-//    std::vector<AST *> body;
-//    AST* callee;
-//    std::vector<AST *> args;
-//    std::string value;
-//
-//    AST(ASTTypes _type, std::vector<AST *> _body) {
-//        if (_type == Program || type == ExpressionStatement) {
-//            type = _type;
-//            body = _body;
-//        } else {
-//            std::cout << "Invalid Type " + typeToString(_type) + " can't be declared with a body" << std::endl;
-//            exit(100);
-//        }
-//    }
-//
-//    AST(ASTTypes _type, AST * _callee, std::vector<AST *> _args) {
-//        if (_type == CallExpression) {
-//            type = _type;
-//            callee = _callee;
-//            args = _args;
-//        } else {
-//            std::cout << "Invalid Type " + typeToString(_type) + " can't be declared with a Callee and Args"
-//                      << std::endl;
-//            exit(100);
-//        }
-//    }
-//
-//    AST(ASTTypes _type, std::string _value) {
-//        if (_type == Identifier || _type == NumberLiteral) {
-//            type = _type;
-//            value = _value;
-//        } else {
-//            std::cout << "Invalid Type " + typeToString(_type) + " can't be declared with a value" << std::endl;
-//            exit(100);
-//        }
-//    }
-//
-//    std::string getValue() {
-//        if (type == NumberLiteral || type == Identifier) {
-//            return value;
-//        } else {
-//            std::cout << "Type " + typeToString(type) + " doesn't have a value" << std::endl;
-//            exit(105);
-//        }
-//    }
-//
-//    std::vector<AST *> getBody() {
-//        if (type == Program) {
-//            return body;
-//        } else {
-//            std::cout << "Type " + typeToString(type) + " doesn't have a value" << std::endl;
-//            exit(105);
-//        }
-//    }
-//
-//    AST * getCallee() {
-//        if (type == CallExpression) {
-//            return callee;
-//        } else {
-//            std::cout << "Type " + typeToString(type) + " doesn't have a callee" << std::endl;
-//            exit(105);
-//        }
-//    }
-//
-//    std::vector<AST *> getArguments() {
-//        if (type == CallExpression) {
-//            return args;
-//        } else {
-//            std::cout << "Type " + typeToString(type) + " doesn't have Arguments" << std::endl;
-//            exit(105);
-//        }
-//    }
-//
-//    std::string toString() {
-//        switch (type) {
-//            case Program: {
-//                std::string programOut = "type: 'Program', \nbody: [{\n";
-//                for (auto &i : body) {
-//                    programOut += i->toString();
-//                }
-//                programOut += "}]";
-//                return programOut;
-//            }
-//            case ExpressionStatement: {
-//                std::string expressionOut = "  type: 'ExpressionStatement',\n  expression: {\n";
-//                for (auto &i : body) {
-//                    expressionOut += i->toString();
-//                }
-//                expressionOut += "}\n";
-//                return expressionOut;
-//                }
-//            case CallExpression: {
-//                std::string callExpressionOut =
-//                        "  type: 'CallExpression',\n  callee: {\n    " + callee->toString() + "args: {";
-//                for(auto &i : args){
-//                    callExpressionOut += i->toString();
-//                }
-//                callExpressionOut += "}";
-//                return callExpressionOut;
-//            }
-//            case Identifier: {
-//                std::string identifierOut = "  type: 'Identifier',\n      name: " + value + "   \n  }\n    ";
-//                return identifierOut;
-//            }
-//            case NumberLiteral: {
-//                std::string numberOut = "  type: 'NumberLiteral',\n      value: " + value + "   \n  }\n    ";
-//                return numberOut;
-//            }
-//            default: {
-//                return "MALFORMED AST";
-//            }
-//
-//        }
-//    }
-//
-//
-//private:
-//    std::string typeToString(ASTTypes _type) {
-//        switch (_type) {
-//            case Program:
-//                return "Program";
-//            case ExpressionStatement:
-//                return "ExpressionStatement";
-//            case CallExpression:
-//                return "CallExpression";
-//            case Identifier:
-//                return "Identifier";
-//            case NumberLiteral:
-//                return "NumberLiteral";
-//            default: return "[INVALID TYPE]";
-//        }
-//    }
-//
-//
-//};
+enum TokenType {NumberToken, ParenToken, NameToken};
 
 struct Token {
-    std::string type;
+    TokenType type;
     std::string value;
 
     std::string toString(){
-        return "Type: " + type + "; Value: " + value;
+        switch(type){
+            case NumberToken:
+                return  "TokenType: NumberToken; Value: " + value;
+            case ParenToken:
+                return  "TokenType: ParenToken; Value: " + value;
+            case NameToken:
+                return  "TokenType: NameToken; Value: " + value;
+            default:
+                return "TokenType: NULL; Value: " + value;
+        }
     }
 };
 
 
 std::vector<Token> tokenizer(std::string inputCode);
 
-ASTNode * parser(std::vector<Token> inputTokens);
+ASTNode * parser(const std::vector<Token> &inputTokens);
 ASTNode * walk(int& current, std::vector<Token> inputTokens);
 
 
@@ -322,12 +191,12 @@ std::vector<Token> tokenizer(std::string inputCode){
     for(int i = 0; i <= inputCode.length(); i++){
         if(inputCode[i] == '(' || inputCode[i] == ')'){
             Token currentToken;
-            currentToken.type = "paren";
+            currentToken.type = ParenToken;
             currentToken.value = inputCode[i];
             tokens.push_back(currentToken);
         } else if (isdigit(inputCode[i])) {
             Token currentToken;
-            currentToken.type = "number";
+            currentToken.type = NumberToken;
             while (isdigit(inputCode[i])) {
                 currentToken.value += inputCode[i];
                 i++;
@@ -336,7 +205,7 @@ std::vector<Token> tokenizer(std::string inputCode){
             tokens.push_back(currentToken);
         } else if (isalpha(inputCode[i])){
             Token currentToken;
-            currentToken.type = "name";
+            currentToken.type = NameToken;
             while(isalpha(inputCode[i])) {
                 currentToken.value += inputCode[i];
                 i++;
@@ -348,7 +217,7 @@ std::vector<Token> tokenizer(std::string inputCode){
     return tokens;
 }
 
-ASTNode * parser (std::vector<Token> inputTokens){
+ASTNode * parser (const std::vector<Token> &inputTokens){
     int current = 0;
     int & send = current;
 
@@ -360,33 +229,34 @@ ASTNode * parser (std::vector<Token> inputTokens){
     return new ProgramNode(ASTBody);
 }
 
-ASTNode * walk(int& current, std::vector<Token> inputTokens){
+ASTNode * walk(int &current, std::vector<Token> inputTokens){
     Token token = inputTokens[current];
-    if(token.type == "number"){
-        current++;
-        return new NumberLiteralNode(std::stoi(token.value));
-    }
-    if(token.type == "paren" && token.value == "(") {
-        current++;
-        token = inputTokens[current];
+    switch(token.type){
+        case NumberToken:
+            current ++;
+            return new NumberLiteralNode(std::stoi(token.value));
+        case ParenToken:
+            if(token.value == "(") {
+                token = inputTokens[current++];
 
-        ASTNode *_callee = new IdentifierNode(token.value);
-        current++;
-        token = inputTokens[current];
-        std::vector<ASTNode *> _args;
-        while (token.type != "paren" || (token.type == "paren" && token.value != ")")) {
-            _args.push_back(walk(current, inputTokens));
-            token = inputTokens[current];
-        }
-        current++;
-        return new CallExpressionNode(_callee, _args);
-    }
-    if(token.type == "name") {
-        current++;
-        return new IdentifierNode(token.value);
-    }
-    if(token.type != "number" || token.type != "paren") {
-        std::cout << "INVALID Token Type " + token.type + "; Value " + token.value;
-        exit(110);
+                ASTNode *_callee = new IdentifierNode(token.value);
+
+                token = inputTokens[current++];
+
+                std::vector<ASTNode *> _args;
+                while (token.type != ParenToken || token.type == ParenToken && token.value != ")") {
+                    _args.push_back(walk(current, inputTokens));
+                    token = inputTokens[current];
+                }
+                current++;
+                return new CallExpressionNode(_callee, _args);
+            }
+            break;
+        case NameToken:
+            current++;
+            return new IdentifierNode(token.value);
+        default:
+            std::cout << "INVALID Token - " + token.toString();
+            exit(110);
     }
 }
