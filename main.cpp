@@ -179,7 +179,7 @@ ASTNode * walk(int& current, std::vector<Token> inputTokens);
 
 
 int main() {
-    std::string testing = "(add 500 (subtract 23))(Testing 203)";
+    std::string testing = "(add 500 (subtract 23))(Testing 203";
     std::vector<Token> out = tokenizer(testing);
     ASTNode * outAST = parser(out);
     std::cout << outAST->toString(0);
@@ -231,32 +231,56 @@ ASTNode * parser (const std::vector<Token> &inputTokens){
 
 ASTNode * walk(int &current, std::vector<Token> inputTokens){
     Token token = inputTokens[current];
-    switch(token.type){
-        case NumberToken:
-            current ++;
-            return new NumberLiteralNode(std::stoi(token.value));
-        case ParenToken:
-            if(token.value == "(") {
-                token = inputTokens[current++];
-
-                ASTNode *_callee = new IdentifierNode(token.value);
-
-                token = inputTokens[current++];
-
-                std::vector<ASTNode *> _args;
-                while (token.type != ParenToken || token.type == ParenToken && token.value != ")") {
-                    _args.push_back(walk(current, inputTokens));
-                    token = inputTokens[current];
+    if(current + 1 < inputTokens.size()) {
+        switch (token.type) {
+            case NumberToken: {
+                if (current + 1 < inputTokens.size()) {
+                    current++;
+                    return new NumberLiteralNode(std::stoi(token.value));
+                } else {
+                    std::cout << "Missing Closing Parentheses" << std::endl;
+                    exit(150);
                 }
-                current++;
-                return new CallExpressionNode(_callee, _args);
             }
-            break;
-        case NameToken:
-            current++;
-            return new IdentifierNode(token.value);
-        default:
-            std::cout << "INVALID Token - " + token.toString();
-            exit(110);
+            case ParenToken: {
+                if (token.value == "(") {
+                    token = inputTokens[current++];
+
+                    ASTNode *_callee = new IdentifierNode(token.value);
+
+                    if (current + 1 < inputTokens.size()) {
+                        token = inputTokens[current++];
+                    } else {
+                        std::cout << "Missing Closing Parentheses" << std::endl;
+                        exit(150);
+                    }
+
+                    std::vector<ASTNode *> _args;
+                    while (token.type != ParenToken || token.type == ParenToken && token.value != ")") {
+                        _args.push_back(walk(current, inputTokens));
+                        token = inputTokens[current];
+                    }
+                    if(current + 1 < inputTokens.size()) {
+                        current++;
+                        return new CallExpressionNode(_callee, _args);
+                    } else {
+                        std::cout << "Missing Closing Parentheses" << std::endl;
+                        exit(150);
+                    }
+                }
+                break;
+            }
+            case NameToken: {
+                current++;
+                return new IdentifierNode(token.value);
+            }
+            default: {
+                std::cout << "INVALID Token - " + token.toString();
+                exit(110);
+            }
+        }
+    } else {
+        std::cout << "Missing Closing Parentheses" << std::endl;
+        exit(150);
     }
 }
