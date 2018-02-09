@@ -1,8 +1,7 @@
 #include <iostream>
 #include <vector>
-
-#include <iostream>
-#include <vector>
+#include <fstream>
+#include <streambuf>
 
 class ASTNode {
     std::vector<ASTNode *> children;
@@ -171,7 +170,7 @@ struct Token {
     }
 };
 
-
+std::string fileToString(const std::string &fileName);
 std::vector<Token> tokenizer(std::string inputCode);
 
 ASTNode * parser(const std::vector<Token> &inputTokens);
@@ -179,11 +178,20 @@ ASTNode * walk(int& current, std::vector<Token> inputTokens);
 
 
 int main() {
-    std::string testing = "(add 500 (subtract 23))(Testing 203";
-    std::vector<Token> out = tokenizer(testing);
+    std::string fileIn = fileToString("Lisp");
+    std::cout << fileIn << std::endl;
+    std::vector<Token> out = tokenizer(fileIn);
     ASTNode * outAST = parser(out);
     std::cout << outAST->toString(0);
     return 0;
+}
+
+std::string fileToString(const std::string &fileName){
+    std::ifstream t("C:\\Users\\Spoon\\CLionProjects\\LispCompiler\\Lisp.lasp", std::ios::binary);
+    std::string out;
+    out.assign((std::istreambuf_iterator<char>(t)),
+                    std::istreambuf_iterator<char>());
+    return out;
 }
 
 std::vector<Token> tokenizer(std::string inputCode){
@@ -231,7 +239,7 @@ ASTNode * parser (const std::vector<Token> &inputTokens){
 
 ASTNode * walk(int &current, std::vector<Token> inputTokens){
     Token token = inputTokens[current];
-    if(current + 1 < inputTokens.size()) {
+    if(current + 1 <= inputTokens.size()) {
         switch (token.type) {
             case NumberToken: {
                 if (current + 1 < inputTokens.size()) {
@@ -244,12 +252,14 @@ ASTNode * walk(int &current, std::vector<Token> inputTokens){
             }
             case ParenToken: {
                 if (token.value == "(") {
-                    token = inputTokens[current++];
+                    current++;
+                    token = inputTokens[current];
 
                     ASTNode *_callee = new IdentifierNode(token.value);
 
-                    if (current + 1 < inputTokens.size()) {
-                        token = inputTokens[current++];
+                    if (current + 1 <= inputTokens.size()) {
+                        current ++;
+                        token = inputTokens[current];
                     } else {
                         std::cout << "Missing Closing Parentheses" << std::endl;
                         exit(150);
@@ -260,7 +270,7 @@ ASTNode * walk(int &current, std::vector<Token> inputTokens){
                         _args.push_back(walk(current, inputTokens));
                         token = inputTokens[current];
                     }
-                    if(current + 1 < inputTokens.size()) {
+                    if(current + 1 <= inputTokens.size()) {
                         current++;
                         return new CallExpressionNode(_callee, _args);
                     } else {
@@ -271,8 +281,10 @@ ASTNode * walk(int &current, std::vector<Token> inputTokens){
                 break;
             }
             case NameToken: {
-                current++;
-                return new IdentifierNode(token.value);
+                if(current <= inputTokens.size()){
+                    current++;
+                    return new IdentifierNode(token.value);
+                }
             }
             default: {
                 std::cout << "INVALID Token - " + token.toString();
