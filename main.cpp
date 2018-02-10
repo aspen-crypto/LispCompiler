@@ -178,7 +178,7 @@ ASTNode * walk(int& current, std::vector<Token> inputTokens);
 
 
 int main() {
-    std::string fileIn = fileToString("Lisp.lasp");
+    std::string fileIn = fileToString("C:\\Users\\Spoon\\CLionProjects\\LispCompiler\\Lisp");
     std::cout << fileIn << std::endl;
     std::vector<Token> out = tokenizer(fileIn);
     ASTNode * outAST = parser(out);
@@ -187,7 +187,7 @@ int main() {
 }
 
 std::string fileToString(const std::string &fileName){
-    std::ifstream t("C:\\Users\\Spoon\\CLionProjects\\LispCompiler\\" + fileName, std::ios::binary);
+    std::ifstream t(fileName + ".lasp", std::ios::binary);
     std::string out;
     out.assign((std::istreambuf_iterator<char>(t)),
                     std::istreambuf_iterator<char>());
@@ -298,5 +298,5 @@ ASTNode * walk(int &current, std::vector<Token> inputTokens){
 }
 
 void vistor(std::vector<ASTNode *> programToRun){
-    
+
 }
