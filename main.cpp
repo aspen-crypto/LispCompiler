@@ -178,7 +178,7 @@ ASTNode * walk(int& current, std::vector<Token> inputTokens);
 
 
 int main() {
-    std::string fileIn = fileToString("Lisp");
+    std::string fileIn = fileToString("Lisp.lasp");
     std::cout << fileIn << std::endl;
     std::vector<Token> out = tokenizer(fileIn);
     ASTNode * outAST = parser(out);
@@ -187,7 +187,7 @@ int main() {
 }
 
 std::string fileToString(const std::string &fileName){
-    std::ifstream t("C:\\Users\\Spoon\\CLionProjects\\LispCompiler\\Lisp.lasp", std::ios::binary);
+    std::ifstream t("C:\\Users\\Spoon\\CLionProjects\\LispCompiler\\" + fileName, std::ios::binary);
     std::string out;
     out.assign((std::istreambuf_iterator<char>(t)),
                     std::istreambuf_iterator<char>());
@@ -295,4 +295,8 @@ ASTNode * walk(int &current, std::vector<Token> inputTokens){
         std::cout << "Missing Closing Parentheses" << std::endl;
         exit(150);
     }
+}
+
+void vistor(std::vector<ASTNode *> programToRun){
+    
 }
