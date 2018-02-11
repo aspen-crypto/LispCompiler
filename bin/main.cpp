@@ -2,32 +2,19 @@
 #include <vector>
 #include <fstream>
 #include "../bin/AST/ASTNode.h"
-#include "TokenHandler/TokenType.h"
-#include "TokenHandler/Token.h"
 #include "TokenHandler/Tokenizer.h"
-
-std::string fileToString(const std::string &fileName);
-std::vector<Token> tokenizer(std::string inputCode);
+#include "InputFileHandler.h"
 
 ASTNode * parser(const std::vector<Token> &inputTokens);
 ASTNode * walk(int& current, std::vector<Token> inputTokens);
 
 
 int main() {
-    std::string fileIn = fileToString("C:\\Users\\Spoon\\CLionProjects\\LispCompiler\\Lisp");
-    std::cout << fileIn << std::endl;
+    std::string fileIn = fileToString("..\\Lisp");
     std::vector<Token> out = tokenizer(fileIn);
     ASTNode * outAST = parser(out);
     std::cout << outAST->toString(0);
     return 0;
-}
-
-std::string fileToString(const std::string &fileName){
-    std::ifstream t(fileName + ".lasp", std::ios::binary);
-    std::string out;
-    out.assign((std::istreambuf_iterator<char>(t)),
-                    std::istreambuf_iterator<char>());
-    return out;
 }
 
 ASTNode * parser (const std::vector<Token> &inputTokens){
