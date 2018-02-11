@@ -1,15 +1,13 @@
 #include <iostream>
 #include <vector>
+#include "ASTType.h"
 #include "ASTNode.h"
 
-class ASTNode {
-    std::vector<ASTNode *> children;
+ASTNode::children;
 
 public:
-    enum NodeType {Program, ExpressionStatement, CallExpression, Identifier, NumberLiteral};
-
     NodeType getType(){
-        return type;
+        return ASTNode::type;
     };
 
     void setNodeType(NodeType _type){
@@ -33,7 +31,7 @@ private:
 };
 
 class ProgramNode : public ASTNode{
-    NodeType type = ASTNode::Program;
+    NodeType type = Program;
 
 public :
     explicit ProgramNode(std::vector<ASTNode *> _body){
@@ -55,7 +53,7 @@ public :
 };
 
 class ExpressionStatementNode : public ASTNode{
-    NodeType type = ASTNode::ExpressionStatement;
+    NodeType type = ExpressionStatement;
 
 public :
     explicit ExpressionStatementNode(std::vector<ASTNode *> _expressions){
@@ -79,7 +77,7 @@ public :
 };
 
 class CallExpressionNode : public ASTNode{
-    NodeType type = ASTNode::CallExpression;
+    NodeType type = CallExpression;
     ASTNode * callee;
 
 public:
@@ -108,7 +106,7 @@ public:
 };
 
 class IdentifierNode : public ASTNode{
-    NodeType type = ASTNode::Identifier;
+    NodeType type = Identifier;
     std::string value;
 
 public:
@@ -129,7 +127,7 @@ public:
 };
 
 class NumberLiteralNode: public ASTNode{
-    NodeType type = ASTNode::NumberLiteral;
+    NodeType type = NumberLiteral;
     int value;
 
 public:

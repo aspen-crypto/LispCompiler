@@ -112,7 +112,7 @@ public:
     };
 };
 
-class IdentifierNode : public ASTNode{
+class IdentifierNode : public ASTNode {
     NodeType type = ASTNode::Identifier;
     std::string value;
 
@@ -128,7 +128,7 @@ public:
         return output;
     }
 
-    std::string getString(){
+    std::string getValue(){
         return value;
     }
 };
