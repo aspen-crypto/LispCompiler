@@ -17,6 +17,10 @@ public:
         type = _type;
     }
 
+    std::string toString(){
+        return toString(0);
+    }
+
     virtual std::string toString(unsigned int tabLevel) {
         return nullptr;
     }
@@ -182,7 +186,7 @@ int main() {
     std::cout << fileIn << std::endl;
     std::vector<Token> out = tokenizer(fileIn);
     ASTNode * outAST = parser(out);
-    std::cout << outAST->toString(0);
+    std::cout << outAST->toString();
     return 0;
 }
 
