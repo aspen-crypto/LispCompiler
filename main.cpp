@@ -17,6 +17,10 @@ public:
         type = _type;
     }
 
+    std::string toString(){
+        return toString(0);
+    }
+
     virtual std::string toString(unsigned int tabLevel) {
         return nullptr;
     }
@@ -108,7 +112,7 @@ public:
     };
 };
 
-class IdentifierNode : public ASTNode{
+class IdentifierNode : public ASTNode {
     NodeType type = ASTNode::Identifier;
     std::string value;
 
@@ -124,7 +128,7 @@ public:
         return output;
     }
 
-    std::string getString(){
+    std::string getValue(){
         return value;
     }
 };
@@ -182,7 +186,7 @@ int main() {
     std::cout << fileIn << std::endl;
     std::vector<Token> out = tokenizer(fileIn);
     ASTNode * outAST = parser(out);
-    std::cout << outAST->toString(0);
+    std::cout << outAST->toString();
     return 0;
 }
 

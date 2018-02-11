@@ -1,16 +1,13 @@
 #include <iostream>
 #include <vector>
-#include "AST.h"
+#include "ASTType.h"
+#include "ASTNode.h"
 
-class ASTNode {
-    std::vector<ASTNode *> children;
+ASTNode::children;
 
 public:
-    enum NodeType {Program, ExpressionStatement, CallExpression, Identifier, NumberLiteral};
-    NodeType type;
-
     NodeType getType(){
-        return type;
+        return ASTNode::type;
     };
 
     void setNodeType(NodeType _type){
@@ -26,16 +23,19 @@ public:
     }
 
     void setChildren(std::vector<ASTNode *> _children){
-        children = _children;
+        children = std::move(_children);
     }
+
+private:
+    NodeType type;
 };
 
 class ProgramNode : public ASTNode{
-    NodeType type = ASTNode::Program;
+    NodeType type = Program;
 
 public :
     explicit ProgramNode(std::vector<ASTNode *> _body){
-        setChildren(_body);
+        setChildren(std::move(_body));
         setNodeType(type);
     }
 
@@ -53,11 +53,11 @@ public :
 };
 
 class ExpressionStatementNode : public ASTNode{
-    NodeType type = ASTNode::ExpressionStatement;
+    NodeType type = ExpressionStatement;
 
 public :
     explicit ExpressionStatementNode(std::vector<ASTNode *> _expressions){
-        setChildren(_expressions);
+        setChildren(std::move(_expressions));
         setNodeType(type);
     }
 
@@ -77,41 +77,47 @@ public :
 };
 
 class CallExpressionNode : public ASTNode{
-    NodeType type = ASTNode::CallExpression;
+    NodeType type = CallExpression;
     ASTNode * callee;
 
 public:
     CallExpressionNode(ASTNode * _callee, std::vector<ASTNode *> _args) {
         callee = _callee;
-        setChildren(_args);
+        setChildren(std::move(_args));
         setNodeType(type);
     }
 
     std::string toString(unsigned int tabLevel) override {
         std::string tabSpacing = std::string(tabLevel * 4, ' ');
         tabLevel++;
-        std::string output = tabSpacing + "type: 'CallExpression',\n" + tabSpacing + "callee: {\n" + callee -> toString(tabLevel) + tabSpacing + "}\n" + tabSpacing + "args: {\n";
+        std::string output = tabSpacing + "type: 'CallExpression',{\n";
+        tabSpacing = std::string(tabLevel * 4, ' ');
+        tabLevel ++;
+        output += tabSpacing + "callee: {\n" + callee -> toString(tabLevel) + tabSpacing + "}\n" + tabSpacing + "args: {\n";
         for(auto &i : getChildren()){
             output += i -> toString(tabLevel);
         }
+        output += tabSpacing + "}\n";
+        tabLevel -= 2;
+        tabSpacing = std::string(tabLevel * 4, ' ');
         output += tabSpacing + "}\n";
         return output;
     };
 };
 
 class IdentifierNode : public ASTNode{
-    NodeType type = ASTNode::Identifier;
+    NodeType type = Identifier;
     std::string value;
 
 public:
     explicit IdentifierNode(std::string _value){
-        value = _value;
+        value = std::move(_value);
         setNodeType(type);
     }
 
     std::string toString(unsigned int tabLevel) override {
         std::string tabSpacing = std::string(tabLevel * 4, ' ');
-        std::string output  = tabSpacing + "type: 'Identifier',\n" + tabSpacing + "    name: " + value + "\n" + tabSpacing + "}\n";
+        std::string output  = tabSpacing + "type: 'Identifier',{\n" + tabSpacing + "    name: " + value + "\n" + tabSpacing + "}\n";
         return output;
     }
 
@@ -121,7 +127,7 @@ public:
 };
 
 class NumberLiteralNode: public ASTNode{
-    NodeType type = ASTNode::NumberLiteral;
+    NodeType type = NumberLiteral;
     int value;
 
 public:
