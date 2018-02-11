@@ -3,4 +3,4 @@ project(LispCompiler)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(LispCompiler main.cpp AST.cpp AST.h ASTNode.cpp ASTNode.h ASTType.h)
+add_executable(LispCompiler main.cpp ASTNode.cpp ASTNode.h ASTType.h)
