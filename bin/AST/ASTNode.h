@@ -13,7 +13,6 @@ class ASTNode {
         virtual std::string toString(unsigned int tabLevel);
         void setChildren(std::vector<ASTNode *> _children);
         void setNodeType(NodeType _type);
-
 };
 
 class ProgramNode : public ASTNode {

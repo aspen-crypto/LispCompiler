@@ -1,28 +1,10 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <streambuf>
 #include "../bin/AST/ASTNode.h"
-
-enum TokenType {NumberToken, ParenToken, NameToken};
-
-struct Token {
-    TokenType type;
-    std::string value;
-
-    std::string toString(){
-        switch(type){
-            case NumberToken:
-                return  "TokenType: NumberToken; Value: " + value;
-            case ParenToken:
-                return  "TokenType: ParenToken; Value: " + value;
-            case NameToken:
-                return  "TokenType: NameToken; Value: " + value;
-            default:
-                return "TokenType: NULL; Value: " + value;
-        }
-    }
-};
+#include "TokenHandler/TokenType.h"
+#include "TokenHandler/Token.h"
+#include "TokenHandler/Tokenizer.h"
 
 std::string fileToString(const std::string &fileName);
 std::vector<Token> tokenizer(std::string inputCode);
@@ -46,37 +28,6 @@ std::string fileToString(const std::string &fileName){
     out.assign((std::istreambuf_iterator<char>(t)),
                     std::istreambuf_iterator<char>());
     return out;
-}
-
-std::vector<Token> tokenizer(std::string inputCode){
-    std::vector<Token> tokens;
-    for(int i = 0; i <= inputCode.length(); i++){
-        if(inputCode[i] == '(' || inputCode[i] == ')'){
-            Token currentToken;
-            currentToken.type = ParenToken;
-            currentToken.value = inputCode[i];
-            tokens.push_back(currentToken);
-        } else if (isdigit(inputCode[i])) {
-            Token currentToken;
-            currentToken.type = NumberToken;
-            while (isdigit(inputCode[i])) {
-                currentToken.value += inputCode[i];
-                i++;
-            }
-            i--;
-            tokens.push_back(currentToken);
-        } else if (isalpha(inputCode[i])){
-            Token currentToken;
-            currentToken.type = NameToken;
-            while(isalpha(inputCode[i])) {
-                currentToken.value += inputCode[i];
-                i++;
-            }
-            i--;
-            tokens.push_back(currentToken);
-        }
-    }
-    return tokens;
 }
 
 ASTNode * parser (const std::vector<Token> &inputTokens){
