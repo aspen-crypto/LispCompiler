@@ -1,82 +1,20 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include <streambuf>
-#include "ASTNode.h"
-
-enum TokenType {NumberToken, ParenToken, NameToken};
-
-struct Token {
-    TokenType type;
-    std::string value;
-
-    std::string toString(){
-        switch(type){
-            case NumberToken:
-                return  "TokenType: NumberToken; Value: " + value;
-            case ParenToken:
-                return  "TokenType: ParenToken; Value: " + value;
-            case NameToken:
-                return  "TokenType: NameToken; Value: " + value;
-            default:
-                return "TokenType: NULL; Value: " + value;
-        }
-    }
-};
-
-std::string fileToString(const std::string &fileName);
-std::vector<Token> tokenizer(std::string inputCode);
+#include "../bin/AST/ASTNode.h"
+#include "TokenHandler/Tokenizer.h"
+#include "InputFileHandler.h"
 
 ASTNode * parser(const std::vector<Token> &inputTokens);
 ASTNode * walk(int& current, std::vector<Token> inputTokens);
 
 
 int main() {
-    std::string fileIn = fileToString("C:\\Users\\Spoon\\CLionProjects\\LispCompiler\\Lisp");
-    std::cout << fileIn << std::endl;
+    std::string fileIn = fileToString("..\\Lisp");
     std::vector<Token> out = tokenizer(fileIn);
     ASTNode * outAST = parser(out);
     std::cout << outAST->toString(0);
     return 0;
-}
-
-std::string fileToString(const std::string &fileName){
-    std::ifstream t(fileName + ".lasp", std::ios::binary);
-    std::string out;
-    out.assign((std::istreambuf_iterator<char>(t)),
-                    std::istreambuf_iterator<char>());
-    return out;
-}
-
-std::vector<Token> tokenizer(std::string inputCode){
-    std::vector<Token> tokens;
-    for(int i = 0; i <= inputCode.length(); i++){
-        if(inputCode[i] == '(' || inputCode[i] == ')'){
-            Token currentToken;
-            currentToken.type = ParenToken;
-            currentToken.value = inputCode[i];
-            tokens.push_back(currentToken);
-        } else if (isdigit(inputCode[i])) {
-            Token currentToken;
-            currentToken.type = NumberToken;
-            while (isdigit(inputCode[i])) {
-                currentToken.value += inputCode[i];
-                i++;
-            }
-            i--;
-            tokens.push_back(currentToken);
-        } else if (isalpha(inputCode[i])){
-            Token currentToken;
-            currentToken.type = NameToken;
-            while(isalpha(inputCode[i])) {
-                currentToken.value += inputCode[i];
-                i++;
-            }
-            i--;
-            tokens.push_back(currentToken);
-        }
-    }
-    return tokens;
 }
 
 ASTNode * parser (const std::vector<Token> &inputTokens){
