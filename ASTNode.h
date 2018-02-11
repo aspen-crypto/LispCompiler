@@ -5,15 +5,14 @@
 
 class ASTNode {
     std::vector<ASTNode *> children;
+    NodeType type;
 
     public:
         NodeType getType();
         std::vector<ASTNode *> getChildren();
-        std::string toString();
-
-    private:
         virtual std::string toString(unsigned int tabLevel);
         void setChildren(std::vector<ASTNode *> _children);
+        void setNodeType(NodeType _type);
 
 };
 
@@ -22,8 +21,6 @@ class ProgramNode : public ASTNode {
 
     public:
         explicit ProgramNode(std::vector<ASTNode *> _body);
-
-    private:
         std::string toString(unsigned int tabLevel) override;
 };
 
@@ -32,8 +29,6 @@ class ExpressionStatementNode : public ASTNode {
 
     public:
         explicit ExpressionStatementNode(std::vector<ASTNode *> _expression);
-
-    private:
         std::string toString(unsigned int tabLevel) override;
 };
 
@@ -43,8 +38,6 @@ class CallExpressionNode : public ASTNode {
 
     public:
         CallExpressionNode(ASTNode * _callee, std::vector<ASTNode *> _args);
-
-    private:
         std::string toString(unsigned int tabLevel) override;
 };
 
@@ -55,8 +48,6 @@ class IdentifierNode : public ASTNode {
     public:
         explicit IdentifierNode(std::string _value);
         std::string getValue();
-
-    private:
         std::string toString(unsigned int tabLevel) override;
 };
 
@@ -67,8 +58,6 @@ class NumberLiteralNode : public ASTNode{
     public:
         explicit NumberLiteralNode(int _value);
         int getValue();
-
-    private:
         std::string toString(unsigned int tabLevel) override;
 };
 
