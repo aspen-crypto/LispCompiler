@@ -2,7 +2,7 @@
 #include <vector>
 #include <fstream>
 #include <streambuf>
-#include "ASTNode.h"
+#include "../bin/AST/ASTNode.h"
 
 enum TokenType {NumberToken, ParenToken, NameToken};
 
