@@ -3,4 +3,4 @@ project(LispCompiler)
 
 set(CMAKE_CXX_STANDARD 11)
 
-add_executable(LispCompiler bin/main.cpp bin/AST/ASTNode.cpp bin/AST/ASTNode.h bin/AST/ASTType.h bin/TokenHandler/TokenType.h bin/TokenHandler/Token.h bin/TokenHandler/Tokenizer.cpp bin/TokenHandler/Tokenizer.h bin/InputFileHandler.cpp bin/InputFileHandler.h)
+add_executable(LispCompiler bin/main.cpp bin/AST/ASTNode.cpp bin/AST/ASTNode.h bin/AST/ASTType.h bin/Handlers/TokenHandler/TokenType.h bin/Handlers/TokenHandler/Token.h bin/Handlers/TokenHandler/Tokenizer.cpp bin/Handlers/TokenHandler/Tokenizer.h bin/Handlers/InputHandler/InputFileHandler.cpp bin/Handlers/InputHandler/InputFileHandler.h bin/Handlers/ParseHandler/Parser.cpp bin/Handlers/ParseHandler/Parser.h)
