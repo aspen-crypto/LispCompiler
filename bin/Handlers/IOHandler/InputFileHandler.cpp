@@ -6,5 +6,6 @@ std::string fileToString(const std::string &fileName){
     std::string out;
     out.assign((std::istreambuf_iterator<char>(t)),
                std::istreambuf_iterator<char>());
+    t.close();
     return out;
 }
