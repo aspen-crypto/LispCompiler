@@ -38,6 +38,7 @@ class CallExpressionNode : public ASTNode {
     public:
         CallExpressionNode(ASTNode * _callee, std::vector<ASTNode *> _args);
         std::string toString(unsigned int tabLevel) override;
+        ASTNode * getCallee();
 };
 
 class IdentifierNode : public ASTNode {
