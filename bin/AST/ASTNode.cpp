@@ -83,6 +83,10 @@ std::string CallExpressionNode::toString(unsigned int tabLevel) {
     return output;
 };
 
+ASTNode * CallExpressionNode::getCallee() {
+    return callee;
+};
+
 
 IdentifierNode::IdentifierNode(std::string _value){
     value = std::move(_value);
