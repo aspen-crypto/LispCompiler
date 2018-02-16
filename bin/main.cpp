@@ -24,6 +24,10 @@ void vistor(ASTNode * astTree){
     if(astTree->getType() == CallExpression){
         CallExpressionNode * node = (CallExpressionNode *) astTree;
         if(node->getCallee()->getType() == Identifier){
+            IdentifierNode * idNode = (IdentifierNode *) node->getCallee();
+            if(idNode->getValue() == "set"){
+                
+            }
         }
     }
 

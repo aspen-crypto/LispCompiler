@@ -10,17 +10,17 @@ class ASTNode {
     public:
         NodeType getType();
         std::vector<ASTNode *> getChildren();
-        virtual std::string toString(unsigned int tabLevel);
-        void setChildren(std::vector<ASTNode *> _children);
-        void setNodeType(NodeType _type);
+        virtual std::string toString(unsigned int);
+        void setChildren(std::vector<ASTNode *>);
+        void setNodeType(NodeType);
 };
 
 class ProgramNode : public ASTNode {
     NodeType type;
 
     public:
-        explicit ProgramNode(std::vector<ASTNode *> _body);
-        std::string toString(unsigned int tabLevel) override;
+        explicit ProgramNode(std::vector<ASTNode *>);
+        std::string toString(unsigned int) override;
 };
 
 class ExpressionStatementNode : public ASTNode {
@@ -28,7 +28,7 @@ class ExpressionStatementNode : public ASTNode {
 
     public:
         explicit ExpressionStatementNode(std::vector<ASTNode *> _expression);
-        std::string toString(unsigned int tabLevel) override;
+        std::string toString(unsigned int) override;
 };
 
 class CallExpressionNode : public ASTNode {
