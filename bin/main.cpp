@@ -21,12 +21,14 @@ int main() {
 }
 
 void vistor(ASTNode * astTree){
+    //TODO: Simplify the Accessing of Children Classes
+    //Remove Defensive Programming
     if(astTree->getType() == CallExpression){
         CallExpressionNode * node = (CallExpressionNode *) astTree;
         if(node->getCallee()->getType() == Identifier){
             IdentifierNode * idNode = (IdentifierNode *) node->getCallee();
             if(idNode->getValue() == "set"){
-                
+
             }
         }
     }
