@@ -36,28 +36,28 @@ void vistor(ASTNode * astTree){
         CallExpressionNode * node = (CallExpressionNode *) astTree;
         if(node->getCallee()->getType() == Identifier) {
             IdentifierNode *idNode = (IdentifierNode *) node->getCallee();
-                if (idNode->getValue() == "SET") {
+                if (idNode->getValue() == "setq") {
                     if (node->getChildren()[0]->getType() == Identifier) {
                         IdentifierNode *variableName = (IdentifierNode *) node->getChildren()[0];
                         variables[variableName->getValue()] = node->getChildren()[1];
                     }
-                } else if (idNode->getValue() == "ADD"){
+                } else if (idNode->getValue() == "add"){
                     addConstant(node->getChildren()[0]);
                     addConstant(node->getChildren()[1]);
                     outputString += "IADD \n";
-                } else if (idNode->getValue() == "SUB"){
+                } else if (idNode->getValue() == "sub"){
                     addConstant(node->getChildren()[0]);
                     addConstant(node->getChildren()[1]);
                     outputString += "ISUB \n";
-                } else if (idNode->getValue() == "MULTIPLY"){
+                } else if (idNode->getValue() == "mult"){
                     addConstant(node->getChildren()[0]);
                     addConstant(node->getChildren()[1]);
                     outputString += "IMULT \n";
-                } else if (idNode->getValue() == "DIVIDE"){
+                } else if (idNode->getValue() == "div"){
                     addConstant(node->getChildren()[0]);
                     addConstant(node->getChildren()[1]);
                     outputString += "IDIV \n";
-                } else if (idNode->getValue() == "PRINT"){
+                } else if (idNode->getValue() == "print"){
                     outputString += "PRINT";
                 }
             } else {
