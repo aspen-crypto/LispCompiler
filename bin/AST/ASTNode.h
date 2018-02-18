@@ -9,7 +9,7 @@ class ASTNode {
 
     public:
         NodeType getType();
-        std::vector<ASTNode *> getChildren();
+        virtual std::vector<ASTNode *> getChildren();
         virtual std::string toString(unsigned int);
         void setChildren(std::vector<ASTNode *>);
         void setNodeType(NodeType);
