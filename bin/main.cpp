@@ -23,54 +23,79 @@ int main() {
     return 0;
 }
 
+int getValueNumber(ASTNode *);
+bool getValueIsNumber(ASTNode *);
+void addConstant(ASTNode *);
+
 void vistor(ASTNode * astTree){
+    for(int i = 0; i < astTree->getChildren().size(); i++){
+        vistor(astTree->getChildren()[i]);
+    }
+
     if(astTree->getType() == CallExpression){
         CallExpressionNode * node = (CallExpressionNode *) astTree;
         if(node->getCallee()->getType() == Identifier) {
             IdentifierNode *idNode = (IdentifierNode *) node->getCallee();
-                if (idNode->getValue() == "set") {
+                if (idNode->getValue() == "SET") {
                     if (node->getChildren()[0]->getType() == Identifier) {
                         IdentifierNode *variableName = (IdentifierNode *) node->getChildren()[0];
                         variables[variableName->getValue()] = node->getChildren()[1];
                     }
-                } else if (idNode->getValue() == "add"){
-                    int valueOne = 0;
-                    int valueTwo = 0;
-                    if (node->getChildren()[0]->getType() == Identifier) {
-                        IdentifierNode *idNodeInner = (IdentifierNode *) node->getChildren()[0];
-                        if(variables[idNodeInner->getValue()]->getType() == NumberLiteral) {
-                            NumberLiteralNode *number = (NumberLiteralNode *) variables[idNodeInner->getValue()];
-                            valueOne = number->getValue();
-                        }
-                    } else {
-                        if(node->getChildren()[0]->getType() == NumberLiteral) {
-                            NumberLiteralNode *number = (NumberLiteralNode *) node->getChildren()[0];
-                            valueOne = number->getValue();
-                        }
-                    }
-
-                    if (node->getChildren()[1]->getType() == Identifier) {
-                        IdentifierNode *idNodeInner = (IdentifierNode *) node->getChildren()[1];
-                        if(variables[idNodeInner->getValue()]->getType() == NumberLiteral) {
-                            NumberLiteralNode *number = (NumberLiteralNode *) variables[idNodeInner->getValue()];
-                            valueTwo = number->getValue();
-                        }
-                    } else {
-                        if(node->getChildren()[1]->getType() == NumberLiteral) {
-                            NumberLiteralNode *number = (NumberLiteralNode *) node->getChildren()[1];
-                            valueTwo = number->getValue();
-                        }
-                    }
-
-
-                    outputString += "IADD " + std::to_string(valueOne) + " " + std::to_string(valueTwo) + "\n";
+                } else if (idNode->getValue() == "ADD"){
+                    addConstant(node->getChildren()[0]);
+                    addConstant(node->getChildren()[1]);
+                    outputString += "IADD \n";
+                } else if (idNode->getValue() == "SUB"){
+                    addConstant(node->getChildren()[0]);
+                    addConstant(node->getChildren()[1]);
+                    outputString += "ISUB \n";
+                } else if (idNode->getValue() == "MULTIPLY"){
+                    addConstant(node->getChildren()[0]);
+                    addConstant(node->getChildren()[1]);
+                    outputString += "IMULT \n";
+                } else if (idNode->getValue() == "DIVIDE"){
+                    addConstant(node->getChildren()[0]);
+                    addConstant(node->getChildren()[1]);
+                    outputString += "IDIV \n";
+                } else if (idNode->getValue() == "PRINT"){
+                    outputString += "PRINT";
                 }
             } else {
             std::cout << "Can't Call /n" + node->getCallee()->toString(0);
         }
     }
+}
 
-    for(int i = 0; i < astTree->getChildren().size(); i++){
-        vistor(astTree->getChildren()[i]);
+void addConstant(ASTNode * constantToAdd){
+    if(getValueIsNumber(constantToAdd)) {
+        int valueOne = getValueNumber(constantToAdd);
+        outputString += "ICONST " + std::to_string(valueOne) + " \n";
+    }
+}
+
+
+int getValueNumber(ASTNode * mainNode) {
+    if (mainNode->getType() == Identifier) {
+        IdentifierNode *idNodeInner = (IdentifierNode *) mainNode;
+        if(variables[idNodeInner->getValue()]->getType() == NumberLiteral) {
+            NumberLiteralNode *number = (NumberLiteralNode *) variables[idNodeInner->getValue()];
+            return number->getValue();
+        }
+    } else if(mainNode->getType() == NumberLiteral) {
+            NumberLiteralNode *number = (NumberLiteralNode *) mainNode;
+            return number->getValue();
+    }
+}
+
+bool getValueIsNumber(ASTNode * mainNode) {
+    if (mainNode->getType() == Identifier) {
+        IdentifierNode *idNodeInner = (IdentifierNode *) mainNode;
+        if(variables[idNodeInner->getValue()]->getType() == NumberLiteral) {
+            return true;
+        }
+    } else if (mainNode->getType() == NumberLiteral) {
+            return true;
+    } else {
+        return false;
     }
 }
