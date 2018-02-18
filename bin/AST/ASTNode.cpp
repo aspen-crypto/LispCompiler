@@ -1,6 +1,5 @@
 #include <iostream>
 #include <vector>
-#include "ASTType.h"
 #include "ASTNode.h"
 
 NodeType ASTNode::getType() {
@@ -25,7 +24,7 @@ void ASTNode::setChildren(std::vector<ASTNode *> _children){
 
 ProgramNode::ProgramNode(std::vector<ASTNode *> _body){
     setChildren(std::move(_body));
-    setNodeType(type);
+    setNodeType(Program);
 }
 
 std::string ProgramNode::toString(unsigned int tabLevel) {
@@ -42,7 +41,7 @@ std::string ProgramNode::toString(unsigned int tabLevel) {
 
 ExpressionStatementNode::ExpressionStatementNode(std::vector<ASTNode *> _expressions){
     setChildren(std::move(_expressions));
-    setNodeType(type);
+    setNodeType(ExpressionStatement);
 }
 
 std::string ExpressionStatementNode::toString(unsigned int tabLevel) {
@@ -63,7 +62,7 @@ std::string ExpressionStatementNode::toString(unsigned int tabLevel) {
 CallExpressionNode::CallExpressionNode(ASTNode * _callee, std::vector<ASTNode *> _args) {
     callee = _callee;
     setChildren(std::move(_args));
-    setNodeType(type);
+    setNodeType(CallExpression);
 }
 
 std::string CallExpressionNode::toString(unsigned int tabLevel) {
@@ -90,7 +89,7 @@ ASTNode * CallExpressionNode::getCallee() {
 
 IdentifierNode::IdentifierNode(std::string _value){
     value = std::move(_value);
-    setNodeType(type);
+    setNodeType(Identifier);
 }
 
 std::string IdentifierNode::toString(unsigned int tabLevel) {
@@ -106,7 +105,7 @@ std::string IdentifierNode::getValue(){
 
 NumberLiteralNode::NumberLiteralNode(int _value){
     value = _value;
-    setNodeType(type);
+    setNodeType(NumberLiteral);
 }
 
 std::string NumberLiteralNode::toString(unsigned int tabLevel) {

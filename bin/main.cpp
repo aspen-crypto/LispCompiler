@@ -9,6 +9,9 @@
 #include "Handlers/ParseHandler/Parser.h"
 
 void vistor(ASTNode * astTree);
+std::map<std::string, ASTNode *> variables;
+
+std::string outputString;
 
 int main() {
     std::string fileIn = fileToString("..\\Lisp");
@@ -16,24 +19,83 @@ int main() {
     ASTNode * outAST = parser(out);
     std::cout << outAST->toString(0);
     vistor(outAST);
-    stringToFile("..\\Lisp", outAST->toString(0));
+    stringToFile("..\\Lisp", outputString);
     return 0;
 }
 
+int getValueNumber(ASTNode *);
+bool getValueIsNumber(ASTNode *);
+void addConstant(ASTNode *);
+
 void vistor(ASTNode * astTree){
-    //TODO: Simplify the Accessing of Children Classes
-    //Remove Defensive Programming
-    if(astTree->getType() == CallExpression){
-        CallExpressionNode * node = (CallExpressionNode *) astTree;
-        if(node->getCallee()->getType() == Identifier){
-            IdentifierNode * idNode = (IdentifierNode *) node->getCallee();
-            if(idNode->getValue() == "set"){
-
-            }
-        }
-    }
-
     for(int i = 0; i < astTree->getChildren().size(); i++){
         vistor(astTree->getChildren()[i]);
+    }
+
+    if(astTree->getType() == CallExpression){
+        CallExpressionNode * node = (CallExpressionNode *) astTree;
+        if(node->getCallee()->getType() == Identifier) {
+            IdentifierNode *idNode = (IdentifierNode *) node->getCallee();
+                if (idNode->getValue() == "setq") {
+                    if (node->getChildren()[0]->getType() == Identifier) {
+                        IdentifierNode *variableName = (IdentifierNode *) node->getChildren()[0];
+                        variables[variableName->getValue()] = node->getChildren()[1];
+                    }
+                } else if (idNode->getValue() == "add"){
+                    addConstant(node->getChildren()[0]);
+                    addConstant(node->getChildren()[1]);
+                    outputString += "IADD \n";
+                } else if (idNode->getValue() == "sub"){
+                    addConstant(node->getChildren()[0]);
+                    addConstant(node->getChildren()[1]);
+                    outputString += "ISUB \n";
+                } else if (idNode->getValue() == "mult"){
+                    addConstant(node->getChildren()[0]);
+                    addConstant(node->getChildren()[1]);
+                    outputString += "IMULT \n";
+                } else if (idNode->getValue() == "div"){
+                    addConstant(node->getChildren()[0]);
+                    addConstant(node->getChildren()[1]);
+                    outputString += "IDIV \n";
+                } else if (idNode->getValue() == "print"){
+                    outputString += "PRINT";
+                }
+            } else {
+            std::cout << "Can't Call /n" + node->getCallee()->toString(0);
+        }
+    }
+}
+
+void addConstant(ASTNode * constantToAdd){
+    if(getValueIsNumber(constantToAdd)) {
+        int valueOne = getValueNumber(constantToAdd);
+        outputString += "ICONST " + std::to_string(valueOne) + " \n";
+    }
+}
+
+
+int getValueNumber(ASTNode * mainNode) {
+    if (mainNode->getType() == Identifier) {
+        IdentifierNode *idNodeInner = (IdentifierNode *) mainNode;
+        if(variables[idNodeInner->getValue()]->getType() == NumberLiteral) {
+            NumberLiteralNode *number = (NumberLiteralNode *) variables[idNodeInner->getValue()];
+            return number->getValue();
+        }
+    } else if(mainNode->getType() == NumberLiteral) {
+            NumberLiteralNode *number = (NumberLiteralNode *) mainNode;
+            return number->getValue();
+    }
+}
+
+bool getValueIsNumber(ASTNode * mainNode) {
+    if (mainNode->getType() == Identifier) {
+        IdentifierNode *idNodeInner = (IdentifierNode *) mainNode;
+        if(variables[idNodeInner->getValue()]->getType() == NumberLiteral) {
+            return true;
+        }
+    } else if (mainNode->getType() == NumberLiteral) {
+            return true;
+    } else {
+        return false;
     }
 }
