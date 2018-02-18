@@ -40,6 +40,9 @@ void vistor(ASTNode * astTree){
                     if (node->getChildren()[0]->getType() == Identifier) {
                         IdentifierNode *variableName = (IdentifierNode *) node->getChildren()[0];
                         variables[variableName->getValue()] = node->getChildren()[1];
+                    } else {
+                        std::cout << "Setting a Variable Requires Name" << std::endl;
+                        exit(170);
                     }
                 } else if (idNode->getValue() == "add"){
                     addConstant(node->getChildren()[0]);
@@ -83,6 +86,9 @@ int getValueNumber(ASTNode * mainNode) {
         if(variables[idNodeInner->getValue()]->getType() == NumberLiteral) {
             NumberLiteralNode *number = (NumberLiteralNode *) variables[idNodeInner->getValue()];
             return number->getValue();
+        } else {
+            //TODO: Implement Proper Fancy Variable Handling
+            std::cout << "Variable Turned Out Not to be a Number" << std::endl;
         }
     } else if(mainNode->getType() == NumberLiteral) {
             NumberLiteralNode *number = (NumberLiteralNode *) mainNode;
