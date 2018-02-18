@@ -44,21 +44,24 @@ void vistor(ASTNode * astTree){
                 } else if (idNode->getValue() == "add"){
                     addConstant(node->getChildren()[0]);
                     addConstant(node->getChildren()[1]);
-                    outputString += "IADD \n";
+                    outputString += "IADD ";
                 } else if (idNode->getValue() == "sub"){
                     addConstant(node->getChildren()[0]);
                     addConstant(node->getChildren()[1]);
-                    outputString += "ISUB \n";
+                    outputString += "ISUB ";
                 } else if (idNode->getValue() == "mult"){
                     addConstant(node->getChildren()[0]);
                     addConstant(node->getChildren()[1]);
-                    outputString += "IMULT \n";
+                    outputString += "IMULT ";
                 } else if (idNode->getValue() == "div"){
                     addConstant(node->getChildren()[0]);
                     addConstant(node->getChildren()[1]);
-                    outputString += "IDIV \n";
+                    outputString += "IDIV ";
                 } else if (idNode->getValue() == "print"){
                     outputString += "PRINT";
+                } else {
+                    std::cout<< "Unknown Call to " + idNode ->getValue();
+                    exit(160);
                 }
             } else {
             std::cout << "Can't Call /n" + node->getCallee()->toString(0);
@@ -69,7 +72,7 @@ void vistor(ASTNode * astTree){
 void addConstant(ASTNode * constantToAdd){
     if(getValueIsNumber(constantToAdd)) {
         int valueOne = getValueNumber(constantToAdd);
-        outputString += "ICONST " + std::to_string(valueOne) + " \n";
+        outputString += "ICONST " + std::to_string(valueOne) + " ";
     }
 }
 
